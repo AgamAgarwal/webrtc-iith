@@ -1,15 +1,15 @@
 function hasGetUserMedia() {
-	navigator.getUserMedia=navigator.getUserMedia ||
-		navigator.webkitGetUserMedia ||
+	navigator.getUserMedia=navigator.webkitGetUserMedia ||
 		navigator.mozGetUserMedia ||
-		navigator.msGetUserMedia;
+		navigator.msGetUserMedia ||
+		navigator.getUserMedia;
 	return !!navigator.getUserMedia;
 }
 
 function setCompatibilty() {
-	window.RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
-	SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.webkitRTCSessionDescription;
-	IceCandidate = window.RTCIceCandidate || window.mozRTCIceCandidate || window.webkitRTCIceCandidate;
+	//window.RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+	SessionDescription = window.RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.webkitRTCSessionDescription;
+	IceCandidate = window.RTCIceCandidate;// = window.RTCIceCandidate || window.mozRTCIceCandidate || window.webkitRTCIceCandidate;
 }
 
 function randomID() {
@@ -43,10 +43,10 @@ SDP_CONSTRAINTS = {
 };
 
 function init() {
-	if(!hasGetUserMedia()) {
-		alert("Sorry! getUserMedia() is not supported ion your browser.");
+	/*if(!hasGetUserMedia()) {
+		alert("Sorry! getUserMedia() is not supported by your browser.");
 		return;
-	}
+	}*/
 
 	setCompatibilty();
 
@@ -54,6 +54,10 @@ function init() {
 	var local_video=document.querySelector('#local-video');
 	var remote_video=document.querySelector('#remote-video');
 	var chat_room_link=document.querySelector('#chat-room-link');
+	var chat_msgs=document.querySelector('#chat-msgs');
+	var message=document.querySelector('#message');
+	var sendButton=document.querySelector('#msgButton');
+	var channel=null;
 
 	//chat_room_link.innerText=location;
 	chat_room_link.textContent=location;
@@ -75,13 +79,26 @@ function init() {
 		chat_room_link.textContent+="#"+room_no;
 	}
 
+	var iceservers=createIceServers(["stun:23.21.150.121", "stun:stun.l.google.com:19302", "turn:numb.viagenie.ca"],
+		"louis%40mozilla.com",
+		"webrtcdemo");
+
+
+
 	var server = {
 	iceServers: [
+				createIceServer("stun:23.21.150.121"),
+				createIceServer("stun:stun.l.google.com:19302"),
+				createIceServer("turn:numb.viagenie.ca", "louis%40mozilla.com", "webrtcdemo")
+				]
+	};
+	console.log(server);
+	/* [
 		{url: "stun:23.21.150.121"},
 		{url: "stun:stun.l.google.com:19302"},
 		{url: "turn:numb.viagenie.ca", credential: "webrtcdemo", username: "louis%40mozilla.com"}
 		]
-	};
+	};*/
 
 	var options = {
 	optional: [
@@ -117,6 +134,7 @@ function init() {
 
 	var successCallback=function(stream) {
 		local_video.src=URL.createObjectURL(stream);
+		local_video.muted=true;
 		conn.addStream(stream);
 		connect();
 	}
@@ -126,43 +144,80 @@ function init() {
 	};
 
 	//get user media
-	navigator.getUserMedia(GUM_CONSTRAINTS, successCallback, errorCallback)
+	//navigator.
+	getUserMedia(GUM_CONSTRAINTS, successCallback, errorCallback)
 
 	//the connection function - this is where everything happens
 	function connect() {
-	if (type === CALLER) {
-		//create offer SDP
-		conn.createOffer(function(offer) {
-			conn.setLocalDescription(offer);
+		if(type === CALLER) {
 
-			//send the offer SDP to FireBase
-			sendToDB(roomRef, room_no, CALLER, JSON.stringify(offer));
+			channel=conn.createDataChannel("datachannel", {});
 
-			//wait for an answer SDP from FireBase
-			recvFromDB(roomRef, room_no, RECEIVER, function(answer) {
-				conn.setRemoteDescription(
-					new SessionDescription(JSON.parse(answer))
-				);
-			});
-		}, errorCallback, SDP_CONSTRAINTS);
+			bindMethods();
 
-	} else {
-		//answerer needs to wait for an offer before generating the answer SDP
-		recvFromDB(roomRef, room_no, CALLER, function (offer) {
-			console.log("answerer");
-			conn.setRemoteDescription(
-				new SessionDescription(JSON.parse(offer))
-			);
-			console.log("answerer");
-			// now we can generate our answer SDP
-			conn.createAnswer(function (answer) {
-				conn.setLocalDescription(answer);
+			//create offer SDP
+			conn.createOffer(function(offer) {
+				conn.setLocalDescription(offer);
+
+				//send the offer SDP to FireBase
+				sendToDB(roomRef, room_no, CALLER, JSON.stringify(offer));
+
+				//wait for an answer SDP from FireBase
+				recvFromDB(roomRef, room_no, RECEIVER, function(answer) {
+					conn.setRemoteDescription(
+						new SessionDescription(JSON.parse(answer))
+					);
+				});
+			}, errorCallback, SDP_CONSTRAINTS);
+
+		} else {
+
+			conn.ondatachannel = function (e) {
+				channel=e.channel;
+				bindMethods();
+			};
+
+			//answerer needs to wait for an offer before generating the answer SDP
+			recvFromDB(roomRef, room_no, CALLER, function (offer) {
 				console.log("answerer");
-				// send it to FireBase
-				sendToDB(roomRef, room_no, RECEIVER, JSON.stringify(answer));
-			}, errorCallback, SDP_CONSTRAINTS);	
-		});	
+				conn.setRemoteDescription(
+					new SessionDescription(JSON.parse(offer))
+				);
+				console.log("answerer");
+				// now we can generate our answer SDP
+				conn.createAnswer(function (answer) {
+					conn.setLocalDescription(answer);
+					console.log("answerer");
+					// send it to FireBase
+					sendToDB(roomRef, room_no, RECEIVER, JSON.stringify(answer));
+				}, errorCallback, SDP_CONSTRAINTS);	
+			});	
+		}
 	}
-}
 
+	//binding methods to data channel
+	function bindMethods() {
+		channel.onopen=function(){console.log("Data Channel open.")};
+
+		channel.onmessage = function (e) {
+			chat_msgs.innerHTML="<span style=\"color:red\">Peer:</span> "+e.data+"<br/>"+chat_msgs.innerHTML;
+		};
+
+		message.disabled=false;
+		sendButton.disabled=false;
+	}
+
+	sendMessage=function() {
+		if(channel==null)
+			return;
+		channel.send(message.value);
+		chat_msgs.innerHTML="<span style=\"color:blue\">You:</span> "+message.value+"<br/>"+chat_msgs.innerHTML;
+		message.value="";
+	}
+
+	checkKey=function(e) {
+		console.log(e);
+		if(e.keyCode==13)
+			sendMessage();
+	}
 }

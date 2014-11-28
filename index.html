@@ -8,6 +8,7 @@
 <script type="text/javascript" src="./files/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="./files/bootstrap.min.js"></script>
 
+<script type="text/javascript" src="./files/adapter.js"></script>
 <script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
 <script type="text/javascript" src="./files/webrtc.js"></script>
 
@@ -46,6 +47,26 @@
 		  </div>   
 		</div> 
 	   
+
+	   <div id="messages">
+			<div class="panel panel-default">			
+			  <div class="panel-heading">
+				<h3 class="panel-title">Conversation</h3>
+			  </div>					 
+			  <ul class="list-group">
+					<li class="list-group-item">
+						<div class="input-group">
+							<input type="text" class="form-control message-text ng-pristine ng-valid" ng-model="messageText" placeholder="Type your message here" id="message" onkeydown="checkKey(event)" disabled="true">
+							<span class="input-group-btn">
+							  <button class="btn btn-default" id="msgButton" onclick="sendMessage()" disabled="true">Send!</button>
+							</span>
+					  </div>
+				  </li>
+				  <li class="list-group-item" id="chat-msgs" style="max-height:270px; height:270px; word-wrap: break-word; overflow-y:scroll" ></li>
+			  </ul>  
+			</div>   
+		</div>
+
 	  </div>
 	  
 	  <div class="col-md-8">   
@@ -53,15 +74,15 @@
 		<div id="video">
 		  <div class="panel panel-default">		  
 			<div class="panel-heading">
-			  <h3 class="panel-title"><kbd>Video</kbd></h3>
+			  <h3 class="panel-title">Video</h3>
 			</div>			
 			<div class="panel-body">
 			  <div class="local-video-wrap" style="height: 96px; width: 128px;">	
 				<video class="local-video" style="height: 96px; width: 128px;" id="local-video" autoplay></video>
 				<button id="start-local-video" class="btn btn-primary" ng-click="startLocalVideo()" ng-show="remoteVideoPeer &amp;&amp; !localVideoPlaying" style="display: none;">Start video</button>  
 			  </div>		   
-			  <div class="remote-video-wrap" style="height: 400px; width: 768px;">	   
-				<video class="remote-video" id="remote-video" style="height: 400px; width: 768px;" autoplay></video>  
+			  <div class="remote-video-wrap" style="height: 450px; width: 768px;">	   
+				<video class="remote-video" id="remote-video" style="height: 450px; width: 768px;" autoplay></video>  
 			  </div>				   
 		  </div>
 
@@ -86,35 +107,6 @@
 			</div>
 		  </div>
 		</div>			  
-		
-		<div id="messages">
-			<div class="panel panel-default">			
-			  <div class="panel-heading">
-				<h3 class="panel-title"><kbd>Conversation</kbd></h3>
-			  </div>					 
-			  <ul class="list-group">
-				  <li class="list-group-item">
-					<form id="post-message" ng-submit="sendMessage()" class="ng-pristine ng-valid">
-					  <div class="input-group">
-						<span class="input-group-btn">
-						  <button class="btn btn-default dropdown-toggle direct-user" data-toggle="dropdown" type="button">@</button>
-						  <ul class="dropdown-menu" role="menu">
-							<li><a href="javascript:void(0)" ng-click="setMessageTarget()">Send to everyone</a></li>
-							<li class="divider"></li>
-							<!-- ngRepeat: peer in peers -->
-						  </ul>
-						</span>
-						<input type="text" class="form-control message-text ng-pristine ng-valid" ng-model="messageText" placeholder="Type your message here">
-						<span class="input-group-btn">
-						  <button class="btn btn-default" type="submit">Send!</button>
-						</span>
-					  </div>
-					</form> 
-				  </li>
-				  <!-- ngRepeat: message in messages -->
-			  </ul>  
-			</div>   
-		</div>
 	  </div> 
 	</div> 
   </div>
