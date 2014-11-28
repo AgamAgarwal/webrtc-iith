@@ -41,26 +41,16 @@ if(isset($_SESSION) && isset($_SESSION['uid'])) {
 
 						<div style="display:none" id="login-alert" class="alert alert-danger col-sm-12"></div>
 							
-						<form id="loginform" class="form-horizontal" role="form">
+						<form action="login_submit.php" id="loginform" class="form-horizontal" role="form" method="post">
 									
 							<div style="margin-bottom: 25px" class="input-group">
 										<span class="input-group-addon"></span>
-										<input id="login-username" type="text" class="form-control" name="username" value="" placeholder="username or email">                                        
+										<input id="username" type="text" class="form-control" name="username" value="" placeholder="username or email">                                        
 									</div>
 								
 							<div style="margin-bottom: 25px" class="input-group">
 										<span class="input-group-addon"></span>
-										<input id="login-password" type="password" class="form-control" name="password" placeholder="password">
-									</div>
-									
-
-								
-							<div class="input-group">
-									  <div class="checkbox">
-										<label>
-										  <input id="login-remember" type="checkbox" name="remember" value="1"> Remember me
-										</label>
-									  </div>
+										<input id="password" type="password" class="form-control" name="password" placeholder="password">
 									</div>
 
 
@@ -68,7 +58,7 @@ if(isset($_SESSION) && isset($_SESSION['uid'])) {
 								<div class="form-group">
 									</br>                                        
 									<div class="col-md-9">
-										<button id="btn-signup" type="button" class="btn btn-info">Sign In</button>
+										<button id="btn-signup" type="submit" class="btn btn-info">Sign In</button>
 									</div>
 								</div>   
 							</form>     

@@ -28,7 +28,8 @@ if(!isset($_SESSION['uid'])) {
 	<div id="container">  
   
 	<nav id="nav">
-	  <a href="#" style = "font-size:26px;">WebRTC Project</a></h1> 
+	  <a href="#" style = "font-size:26px;">WebRTC Project</a></h1>
+	  <a href="logout.php" style="float:right"><code>Logout</code></a>
 	  <a href="./files/documentation.pdf" style = "float:right;"><code>about project</code></a>
 	  <a href="https://github.com/AgamAgarwal/webrtc-iith/" style = "float:right;"><code>&lt;code&gt;</code></a>
 	</nav>	  

@@ -49,7 +49,7 @@ if(!$result) {
 	exit();
 }
 header("Refresh: 3; URL=index.php");
-echo $query;
+
 ?>
 
 <h3>Sign Up success</h3>
