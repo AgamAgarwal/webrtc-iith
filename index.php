@@ -31,7 +31,7 @@ if(isset($_SESSION) && isset($_SESSION['uid'])) {
 			<div class="panel panel-info" >
 					<div class="panel-heading">
 						<div class="panel-title">Sign In</div>
-						<div style="float:right; font-size: 80%; position: relative; top:-10px"> Don't have an account! 
+						<div style="float:right; position: relative; top:-10px"> Don't have an account! 
 										<a href="#" onClick="$('#loginbox').hide(); $('#signupbox').show()">
 											Sign Up Here
 										</a></div>
@@ -82,7 +82,7 @@ if(isset($_SESSION) && isset($_SESSION['uid'])) {
 					<div class="panel panel-info">
 						<div class="panel-heading">
 							<div class="panel-title">Sign Up</div>
-							<div style="float:right; font-size: 85%; position: relative; top:-10px"><a id="signinlink" href="#" onclick="$('#signupbox').hide(); $('#loginbox').show()">Sign In</a></div>
+							<div style="float:right; position: relative; top:-10px"><a id="signinlink" href="#" onclick="$('#signupbox').hide(); $('#loginbox').show()">Sign In</a></div>
 						</div>  
 						<div class="panel-body" >
 							<form action="signup_submit.php" id="signupform" class="form-horizontal" role="form" method="post">
@@ -143,7 +143,7 @@ if(isset($_SESSION) && isset($_SESSION['uid'])) {
 								<div class="form-group">
 									<!-- Button -->                                        
 									<div class="col-md-offset-3 col-md-9">
-										<button id="btn-signup" type="button" class="btn btn-info">Sign Up</button>
+										<button id="btn-signup" type="submit" class="btn btn-info">Sign Up</button>
 									</div>
 								</div>
 								
