@@ -17,6 +17,7 @@ if(!isset($_SESSION['uid'])) {
 <script type="text/javascript" src="./files/adapter.js"></script>
 <script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
 <script type="text/javascript" src="./files/webrtc.js"></script>
+<script type="text/javascript" src="./files/heartbeat.js"></script>
 
 <link rel="stylesheet" href="./files/bootstrap.min.css">
 <link rel="stylesheet" href="./files/bootstrap-theme.min.css">
