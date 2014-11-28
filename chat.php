@@ -40,19 +40,13 @@ if(!isset($_SESSION['uid'])) {
 	<div class="row">
 	  <div class="col-md-4">	  
 			  
-		<div ng-show="!isLoggedIn()" class="panel panel-default">
-		  <div class="panel-heading">
-			<h3 class="panel-title">Chat Room Link</h3>
-		  </div>
-		  <div class="panel-body">
-			  <center>
-				  <div class="input-group">
-						<p type="text" class="form-control ng-pristine ng-valid" ng-model="handle" id="chat-room-link">
-						
-						</p>
-				  </div>
-			  </center>
-		  </div>   
+		<div class="panel panel-default">			
+			  <div class="panel-heading">
+				<h3 class="panel-title">Online</h3>
+			  </div>					 
+			  <ul id="online-list" class="list-group" style="max-height:130px; height:130px; word-wrap: break-word; overflow-y:scroll">
+					<li class="list-group-item" id="chat-room-link"></li>
+			  </ul>  
 		</div> 
 	   
 
@@ -70,7 +64,7 @@ if(!isset($_SESSION['uid'])) {
 							</span>
 					  </div>
 				  </li>
-				  <li class="list-group-item" id="chat-msgs" style="max-height:270px; height:270px; word-wrap: break-word; overflow-y:scroll" ></li>
+				  <li class="list-group-item" id="chat-msgs" style="max-height:200px; height:200px; word-wrap: break-word; overflow-y:scroll" ></li>
 			  </ul>  
 			</div>   
 		</div>
