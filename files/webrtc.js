@@ -79,12 +79,6 @@ function init() {
 		chat_room_link.textContent+="#"+room_no;
 	}
 
-	var iceservers=createIceServers(["stun:23.21.150.121", "stun:stun.l.google.com:19302", "turn:numb.viagenie.ca"],
-		"louis%40mozilla.com",
-		"webrtcdemo");
-
-
-
 	var server = {
 	iceServers: [
 				createIceServer("stun:23.21.150.121"),
@@ -93,12 +87,6 @@ function init() {
 				]
 	};
 	console.log(server);
-	/* [
-		{url: "stun:23.21.150.121"},
-		{url: "stun:stun.l.google.com:19302"},
-		{url: "turn:numb.viagenie.ca", credential: "webrtcdemo", username: "louis%40mozilla.com"}
-		]
-	};*/
 
 	var options = {
 	optional: [
