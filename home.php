@@ -76,7 +76,7 @@ if(!isset($_SESSION['uid'])) {
 					if(data.allowed==1) {
 						$.redirectPost("chat.php", {sessionID: data.sessionID, type: "offerer"});
 					} else {
-						alert("Sorry, the peer is busy. Please try in some time.");
+						alert("Unable to make a call. Please try again.");
 					}
 				},
 				error: function(jqXHR, textStatus, errorThrown) {
@@ -90,6 +90,8 @@ if(!isset($_SESSION['uid'])) {
 				url: "incoming_call.php",
 				success: function(data, textStatus, jqXHR) {
 					var data=$.parseJSON(data);
+					console.log("recv from incoming_call.php");
+					console.log(data);
 					if(data.call==1) {
 						$("#caller-name").text(data.name);
 						$("#call-invitation").show();
