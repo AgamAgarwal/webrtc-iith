@@ -30,7 +30,7 @@ if(!isset($_SESSION['uid'])) {
 				 							+'</td><td>'+peer.attr('username')
 				 							+'</td></tr>'
 				 							+'</tbody></table>'
-				 							+(peer.attr('online')=='1'?'<center><button type="button" class="btn btn-success">Connect</button></center>':''));
+				 							+(peer.attr('online')=='1'?'<center><button type="button" class="btn btn-success" onclick="call('+peer.attr('id')+')">Connect</button></center>':''));
 				 $(".panel-note").append('<blockquote><p>No Notes to display</p></blockquote>');
 			});
 		};
@@ -62,6 +62,26 @@ if(!isset($_SESSION['uid'])) {
 		}
 		update_online_list();
 		var online_list_timer=setInterval(update_online_list, 5000);
+
+
+		call=function(peerID) {
+			$.ajax({
+				url: "call.php",
+				type: "POST",
+				data: {id: peerID},
+				success: function(data, textStatus, jqXHR) {
+					var data=$.parseJSON(data);
+					if(data.allowed==1) {
+						window.location.href="chat.php";
+					} else {
+						alert("Sorry, the peer is busy. Please try in some time.");
+					}
+				},
+				error: function(jqXHR, textStatus, errorThrown) {
+					alert("Unable to make a call. Please try again.");
+				}
+			});
+		};
 	});
 
 </script>
