@@ -91,6 +91,7 @@ function init() {
 	var message=document.querySelector('#message');
 	var sendButton=document.querySelector('#msgButton');
 	var channel=null;
+	var localMediaStream=null
 
 	var server = {
 	iceServers: [
@@ -139,6 +140,19 @@ function init() {
 		local_video.src=URL.createObjectURL(stream);
 		local_video.muted=true;
 		conn.addStream(stream);
+		localMediaStream=stream;
+		$("#toggle-video").click(function() {
+			var videoTracks=localMediaStream.getVideoTracks();
+			if(videoTracks[0]) {
+				if(videoTracks[0].enabled) {
+					videoTracks[0].enabled=false;
+					$("#toggle-video").text("Turn on video");
+				} else {
+					videoTracks[0].enabled=true;
+					$("#toggle-video").text("Turn off video");
+				}
+			}
+		});
 		connect();
 	}
 

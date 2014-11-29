@@ -24,7 +24,6 @@ otherType=<?php echo "\"".($_POST['type']=="offerer"?"answerer":"offerer")."\"";
 usertype=<?php echo "\"".$_SESSION['usertype']."\""; ?>;
 sessionID=<?php echo "\"".$_POST['sessionID']."\""; ?>;
 </script>
-
 <script type="text/javascript" src="./files/webrtc.js"></script>
 <script type="text/javascript" src="./files/heartbeat.js"></script>
 
@@ -38,7 +37,8 @@ sessionID=<?php echo "\"".$_POST['sessionID']."\""; ?>;
 	<div id="container">  
   
 	<nav id="nav">
-	  <a href="#" style = "font-size:26px;">WebRTC Project</a></h1>
+	  <a href="home.php" style = "font-size:26px;">WebRTC Project</a>
+	  <a href="#" style = ><?php echo $_SESSION['username'];?></a>
 	  <a href="logout.php" style="float:right"><code>Logout</code></a>
 	  <a href="./files/documentation.pdf" style = "float:right;"><code>about project</code></a>
 	  <a href="https://github.com/AgamAgarwal/webrtc-iith/" style = "float:right;"><code>&lt;code&gt;</code></a>
@@ -87,28 +87,13 @@ sessionID=<?php echo "\"".$_POST['sessionID']."\""; ?>;
 			  </div>		   
 			  <div class="remote-video-wrap" style="height: 450px; width: 768px;">	   
 				<video class="remote-video" id="remote-video" style="height: 450px; width: 768px;" autoplay></video>  
+				<div id="control">
+				  <div class="panel panel-default">
+				  		<center>
+		                <button type="button" id="toggle-video" class="btn btn-primary">Turn off video</button>	
+				  		</center>
+				</div>
 			  </div>				   
-		  </div>
-
-		  <div class="modal fade" id="incoming-call-modal" tabindex="-1" role="dialog" aria-hidden="true">
-			<div class="modal-dialog modal-sm">
-			  <div class="modal-content">
-				<div class="modal-header">
-				  <h4 class="modal-title">Incoming call...</h4>
-				</div>
-				<div class="modal-body">
-				  <p>You have an incoming video call from <span class="caller"></span></p>
-				  <div class="btn-group btn-group-justified">
-					<div class="btn-group">
-					  <button type="button" class="btn btn-success accept">Accept</button>
-					</div>
-					<div class="btn-group">
-					  <button type="button" class="btn btn-danger reject">Reject</button>
-					</div>
-				  </div>
-				</div>
-			  </div>
-			</div>
 		  </div>
 		</div>			  
 	  </div> 
