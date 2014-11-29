@@ -16,20 +16,54 @@ function randomID() {
 	return (Math.random() * 10000 + 10000 | 0).toString();
 }
 
-function sendToDB(ref, room, key, data) {
-	ref.child(room).child(key).set(data);
-}
-
-function recvFromDB(ref, room, type, callback) {
-	ref.child(room).child(type).on("value", function (snapshot, key) {
-		var data = snapshot.val();
-		if(data)
-			callback(data);
+function sendToDB(dataType, value) {
+	if(dataType!="sdp" && dataType!="candidate")
+		return;
+	$.ajax({
+		url: "insert_data.php",
+		type: "POST",
+		data: {dataType: dataType, data: JSON.stringify(value), sessionID: sessionID},
+		success: function(resp, textStatus, jqXHR) {
+			var resp=$.parseJSON(resp);
+			console.log("send resp:")
+			console.log(resp);
+			if(resp.success==1)
+				console.log("data inserted at server");
+			else
+				setTimeout(function() {sendToDB(dataType, value);}, 500);
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+			setTimeout(function() {sendToDB(dataType, value);}, 500);
+		}
 	});
 }
 
-CALLER="caller";
-RECEIVER="receiver";
+function recvFromDB(dataType, callback) {
+	if(dataType!="sdp" && dataType!="candidate")
+		return;
+	$.ajax({
+		url: "get_data.php",
+		type: "POST",
+		data: {dataType: dataType, sessionID: sessionID},
+		success: function(resp, textStatus, jqXHR) {
+			var resp=$.parseJSON(resp);
+			console.log("receive resp: ");
+			console.log(resp);
+			if(resp.success==1 && resp.data!=null)
+				callback(resp.data);
+			else
+				setTimeout(function() {recvFromDB(dataType, callback);}, 1000);
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+			setTimeout(function() {recvFromDB(dataType, callback);}, 1000);
+		}
+	});
+}
+
+OFFERER="offerer";
+ANSWERER="answerer";
+CANDIDATE="candidate";
+SDP="sdp";
 GUM_CONSTRAINTS={
 	video: true,
 	audio: true
@@ -53,31 +87,10 @@ function init() {
 	//getting elements
 	var local_video=document.querySelector('#local-video');
 	var remote_video=document.querySelector('#remote-video');
-	var chat_room_link=document.querySelector('#chat-room-link');
 	var chat_msgs=document.querySelector('#chat-msgs');
 	var message=document.querySelector('#message');
 	var sendButton=document.querySelector('#msgButton');
 	var channel=null;
-
-	//chat_room_link.innerText=location;
-	chat_room_link.textContent=location;
-
-	//connect to firebase database
-	var dbRef=new Firebase("https://webrtc-iith.firebaseIO.com/");
-	var roomRef=dbRef.child("rooms");
-
-	var room_no=location.hash.substr(1);
-	var type=RECEIVER, otherType=CALLER;
-
-	//if no room number is given, then this user is the caller
-	if (!room_no) {
-		room_no = randomID();
-		type = CALLER;
-		otherType = RECEIVER;
-
-		//chat_room_link.innerText+="#"+room_no;
-		chat_room_link.textContent+="#"+room_no;
-	}
 
 	var server = {
 	iceServers: [
@@ -103,14 +116,16 @@ function init() {
 		conn.onicecandidate = null;
 
 		// request the other peers ICE candidate
-		recvFromDB(roomRef, room_no, "candidate:" + otherType, function (candidate) {
+		recvFromDB(CANDIDATE, function (candidate) {
+			console.log(candidate);
 			conn.addIceCandidate(new IceCandidate(JSON.parse(candidate)));
+			console.log("ice candidate added");
 		});
 
 		console.log("befoer");
 
 		// send our ICE candidate
-		sendToDB(roomRef, room_no, "candidate:" + type, JSON.stringify(e.candidate));
+		sendToDB(CANDIDATE, e.candidate);
 
 		console.log("asfgter");
 	};
@@ -137,8 +152,8 @@ function init() {
 
 	//the connection function - this is where everything happens
 	function connect() {
-		if(type === CALLER) {
-
+		if(type === OFFERER) {
+			console.log("You are offerer");
 			channel=conn.createDataChannel("datachannel", {});
 
 			bindMethods();
@@ -148,10 +163,10 @@ function init() {
 				conn.setLocalDescription(offer);
 
 				//send the offer SDP to FireBase
-				sendToDB(roomRef, room_no, CALLER, JSON.stringify(offer));
+				sendToDB(SDP, offer);
 
 				//wait for an answer SDP from FireBase
-				recvFromDB(roomRef, room_no, RECEIVER, function(answer) {
+				recvFromDB(SDP, function(answer) {
 					conn.setRemoteDescription(
 						new SessionDescription(JSON.parse(answer))
 					);
@@ -159,15 +174,16 @@ function init() {
 			}, errorCallback, SDP_CONSTRAINTS);
 
 		} else {
-
+			console.log("You are answerer");
 			conn.ondatachannel = function (e) {
 				channel=e.channel;
 				bindMethods();
 			};
 
 			//answerer needs to wait for an offer before generating the answer SDP
-			recvFromDB(roomRef, room_no, CALLER, function (offer) {
+			recvFromDB(SDP, function (offer) {
 				console.log("answerer");
+				console.log(offer);
 				conn.setRemoteDescription(
 					new SessionDescription(JSON.parse(offer))
 				);
@@ -177,7 +193,7 @@ function init() {
 					conn.setLocalDescription(answer);
 					console.log("answerer");
 					// send it to FireBase
-					sendToDB(roomRef, room_no, RECEIVER, JSON.stringify(answer));
+					sendToDB(SDP, answer);
 				}, errorCallback, SDP_CONSTRAINTS);	
 			});	
 		}
