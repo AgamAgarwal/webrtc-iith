@@ -13,9 +13,9 @@ $query="UPDATE users SET online=0 WHERE online=1 AND CURRENT_TIMESTAMP-last_hear
 $result=$mysqli->query($query);
 
 //get list of online peers based on usertype
-$query="SELECT id, username, firstname, lastname FROM users WHERE usertype=\"";
+$query="SELECT id, username, firstname, lastname, online FROM users WHERE usertype=\"";
 $query.=$_SESSION['usertype']=="doctor"?"student":"doctor";
-$query.="\" AND online=1;";
+$query.="\" ORDER BY online DESC;";
 
 $result=$mysqli->query($query);
 

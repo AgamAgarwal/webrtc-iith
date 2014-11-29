@@ -40,14 +40,7 @@ if(!isset($_SESSION['uid'])) {
 	<div class="row">
 	  <div class="col-md-4">	  
 			  
-		<div class="panel panel-default">			
-			  <div class="panel-heading">
-				<h3 class="panel-title">Online</h3>
-			  </div>					 
-			  <ul id="online-list" class="list-group" style="max-height:130px; height:130px; word-wrap: break-word; overflow-y:scroll">
-					<li class="list-group-item" id="chat-room-link"></li>
-			  </ul>  
-		</div> 
+		<div class="panel panel-default" id="chat-room-link"></div> 
 	   
 
 	   <div id="messages">

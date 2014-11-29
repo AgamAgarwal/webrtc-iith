@@ -26,8 +26,8 @@ if($result && $obj=$result->fetch_object()) {
 	$_SESSION['lastname']=$obj->lastname;
 	$_SESSION['usertype']=$obj->usertype;
 	
-	//redirect to index.php
-	header('Location: chat.php');
+	//redirect to home
+	header('Location: home.php');
 } else {
 	header("Location: index.php?err=invalid");
 }

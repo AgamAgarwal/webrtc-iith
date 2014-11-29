@@ -1,13 +1,13 @@
 <?php
 session_start();
 if(isset($_SESSION) && isset($_SESSION['uid'])) {
-	header("Location: chat.php");
+	header("Location: home.php");
 	exit();
 }
 ?>
 <html>
 <title>
-  WebRTC Project
+  Sign in/Sign Up
 </title>
 <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
