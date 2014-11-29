@@ -12,6 +12,7 @@ if(!isset($_SESSION['uid'])) {
 <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <script type="text/javascript" src="./files/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="./files/jquery.redirect.js"></script>
 <script type="text/javascript" src="./files/bootstrap.min.js"></script>
 <script type="text/javascript" src="./files/heartbeat.js"></script>
 <script type="text/javascript">
@@ -70,9 +71,10 @@ if(!isset($_SESSION['uid'])) {
 				type: "POST",
 				data: {id: peerID},
 				success: function(data, textStatus, jqXHR) {
+					console.log(data);
 					var data=$.parseJSON(data);
 					if(data.allowed==1) {
-						window.location.href="chat.php";
+						$.redirectPost("chat.php", {session_id: data.sessionID, type: "offerer"});
 					} else {
 						alert("Sorry, the peer is busy. Please try in some time.");
 					}
@@ -82,6 +84,29 @@ if(!isset($_SESSION['uid'])) {
 				}
 			});
 		};
+
+		check_incoming_calls=function() {
+			$.ajax({
+				url: "incoming_call.php",
+				success: function(data, textStatus, jqXHR) {
+					var data=$.parseJSON(data);
+					if(data.call==1) {
+						$("#caller-name").text(data.name);
+						$("#call-invitation").show();
+						$("#incoming-decline").click(function() {
+							$("#call-invitation").hide();
+							//TODO: delete session request from table
+						});
+						$("#incoming-accept").click(function() {
+							$.redirectPost("chat.php", {session_id: data.sessionID, type="receiver"});
+						});
+						setTimeout(function() {$("#call-invitation").hide();}, 120000);
+					}
+				}
+			});
+		};
+
+		var incoming_call_timer=setInterval(check_incoming_calls, 4000);
 	});
 
 </script>
@@ -112,14 +137,22 @@ if(!isset($_SESSION['uid'])) {
 				</div> 
 			</div>
 			<div class="col-md-8">    
-				<div class="panel panel-default"style="max-height:35%; height:35%;">     
+				<div class="panel panel-default" style="max-height:35%; height:35%;">     
 					<div class="panel-heading">
 						<h3 class="panel-title">Details</h3>
 					</div> 
 					<div class="panel-content" style="display:none">
 					</div>
 				</div>
-			</br></br></br>
+				
+				<div class="panel panel-default" id="call-invitation" style="max-height: 20%; height:20%; width: 20%; float: right; display: none;">
+					<div class="panel-heading"><span id="caller-name"></span> wants to talk to you!</div>
+					<div class="panel-call">
+						<button type="button" id="incoming-accept" class="btn btn-success">Accept</button>
+						<button type="button" id="incoming-decline" class="btn btn-failure">Decline</button>
+					</div>
+				</div>
+
 				<div class="panel panel-default" style="max-height:35%; height:35%;">  
 					<div class="panel-heading">
 						<h3 class="panel-title">Notes</h3>
@@ -128,7 +161,7 @@ if(!isset($_SESSION['uid'])) {
 					</div>      
 				</div> 
 			</div>
-		</div> 
+		</div>
 	</div>
 </body>
 </html>

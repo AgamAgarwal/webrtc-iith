@@ -1,6 +1,6 @@
 <?php
 session_start();
-if(!isset($_SESSION['uid'])) {
+if(!isset($_SESSION['uid']) || !isset($_POST['sessionID'])) {
 	header("Location: index.php");
 	exit();
 }

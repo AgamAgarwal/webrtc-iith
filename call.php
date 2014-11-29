@@ -14,8 +14,20 @@ $query="SELECT id FROM users WHERE id=".($_POST['id'])." AND usertype=\""
 $result=$mysqli->query($query);
 
 if($result && $obj=$result->fetch_object()) {
-	echo json_encode(array("allowed" => 1));
-	exit();
+	//add a request session in the 'sessions' table
+	$query="INSERT INTO sessions (doctorid, studentid) VALUES (";
+	if($_SESSION=="doctor")
+		$query.=$_SESSION['uid'].", ".$_POST['id'];
+	else
+		$query.=$_POST['id'].", ".$_SESSION['uid'];
+	$query.=");";
+	
+	$result=$mysqli->query($query);
+
+	if($result) {
+		echo json_encode(array("allowed" => 1, "sessionID" => $mysqli->insert_id));
+		exit();
+	}
 }
 echo json_encode(array("allowed" => 0));
 ?>
