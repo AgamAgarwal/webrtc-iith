@@ -74,7 +74,7 @@ if(!isset($_SESSION['uid'])) {
 					console.log(data);
 					var data=$.parseJSON(data);
 					if(data.allowed==1) {
-						$.redirectPost("chat.php", {session_id: data.sessionID, type: "offerer"});
+						$.redirectPost("chat.php", {sessionID: data.sessionID, type: "offerer"});
 					} else {
 						alert("Sorry, the peer is busy. Please try in some time.");
 					}
@@ -98,7 +98,7 @@ if(!isset($_SESSION['uid'])) {
 							//TODO: delete session request from table
 						});
 						$("#incoming-accept").click(function() {
-							$.redirectPost("chat.php", {session_id: data.sessionID, type="receiver"});
+							$.redirectPost("chat.php", {sessionID: data.sessionID, type: "answerer"});
 						});
 						setTimeout(function() {$("#call-invitation").hide();}, 120000);
 					}

@@ -20,7 +20,7 @@ if(isset($_SESSION) && isset($_SESSION['uid'])) {
 <link rel="stylesheet" href="./files/app.css">
 </head>
 
-<body onload="init()">
+<body>
 	<div class="container"> 
 		<nav id="nav">
 		  <a href="#" style = "font-size:26px;">WebRTC Project</a></h1> 

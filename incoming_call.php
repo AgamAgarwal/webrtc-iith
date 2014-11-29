@@ -8,7 +8,7 @@ if(!isset($_SESSION['uid'])) {
 require_once("connect.php");
 
 //remove old entries
-$query="DELETE FROM sessions WHERE CURRENT_TIMESTAMP-time>120";
+$query="DELETE FROM sessions WHERE (sdp_doctor=NULL OR sdp_receiver=NULL) AND CURRENT_TIMESTAMP-time>120";
 $result=$mysqli->query($query);
 
 //get incoming calls

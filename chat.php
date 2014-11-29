@@ -1,6 +1,7 @@
 <?php
 session_start();
-if(!isset($_SESSION['uid']) || !isset($_POST['sessionID'])) {
+if(!isset($_SESSION['uid']) || !isset($_POST['sessionID']) || !isset($_POST['type'])
+ || ($_POST['type']!="offerer" && $_POST['type']!="answerer")) {
 	header("Location: index.php");
 	exit();
 }
@@ -15,7 +16,15 @@ if(!isset($_SESSION['uid']) || !isset($_POST['sessionID'])) {
 <script type="text/javascript" src="./files/bootstrap.min.js"></script>
 
 <script type="text/javascript" src="./files/adapter.js"></script>
-<script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
+
+<script type="text/javascript">
+//javascript to set variables used by webrtc.js
+type=<?php echo "\"".$_POST['type']."\""; ?>;
+otherType=<?php echo "\"".($_POST['type']=="offerer"?"answerer":"offerer")."\""; ?>;
+usertype=<?php echo "\"".$_SESSION['usertype']."\""; ?>;
+sessionID=<?php echo "\"".$_POST['sessionID']."\""; ?>;
+</script>
+
 <script type="text/javascript" src="./files/webrtc.js"></script>
 <script type="text/javascript" src="./files/heartbeat.js"></script>
 

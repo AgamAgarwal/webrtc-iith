@@ -15,12 +15,12 @@ $result=$mysqli->query($query);
 
 if($result && $obj=$result->fetch_object()) {
 	//add a request session in the 'sessions' table
-	$query="INSERT INTO sessions (doctorid, studentid) VALUES (";
-	if($_SESSION=="doctor")
+	$query="INSERT INTO sessions (doctorid, studentid, offerer) VALUES (";
+	if($_SESSION['usertype']=="doctor")
 		$query.=$_SESSION['uid'].", ".$_POST['id'];
 	else
 		$query.=$_POST['id'].", ".$_SESSION['uid'];
-	$query.=");";
+	$query.=", \"{$_SESSION['usertype']}\");";
 	
 	$result=$mysqli->query($query);
 
